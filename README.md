@@ -79,3 +79,41 @@ After compiling, compare a completed zone with its M1 candles and check the
 show/hide button, legend and cleanup. If nothing is visible, confirm attachment
 with **Ctrl+I**, use a recent **H1** view, and inspect **Toolbox → Experts** for
 runtime messages.
+
+## Development files
+
+The root `SessionBoxes.mq5` is the standalone version for installation. The
+modular source and its development tools are also included:
+
+| Path | Purpose |
+| --- | --- |
+| `Indicators/SessionBoxes.mq5` | Editable indicator source that includes the time helper |
+| `Indicators/NewYorkTime.mqh` | New York daylight-saving and time conversion helper |
+| `tests/test_new_york_time.py` | Python timezone regression tests |
+| `tests/ny_time_adapter.cpp` | C++ adapter that exercises the actual MQL time helper |
+| `tools/package_indicator.py` | Builds a standalone `.mq5`, plain-text copy and ZIP |
+
+To install the modular version instead, copy **both** files from `Indicators/`
+into MT5's `MQL5/Indicators` folder and compile that copy of `SessionBoxes.mq5`.
+Keep its `.mqh` file beside it.
+
+From this repository's root, run the timezone tests on Linux with Python 3,
+`g++` and the IANA timezone database installed:
+
+```sh
+python3 -B -m unittest discover -s tests -v
+```
+
+The tests compare the production helper with independent New York and Tehran
+timezone data. They do not compile the indicator in MetaEditor.
+
+Build downloadable files from the modular source with:
+
+```sh
+python3 tools/package_indicator.py dist
+```
+
+Outputs include `SessionBoxes-v1.15.mq5`, its `.txt` copy and
+`MT5-SessionBoxes-v1.15.zip`. After editing the modular source, also replace the
+root standalone `SessionBoxes.mq5` with the generated `.mq5` so both versions
+stay synchronized. Generated packages and local build outputs are ignored by Git.
